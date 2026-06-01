@@ -1,0 +1,16 @@
+{
+  "date": "2026-06-01",
+  "module": "market",
+  "data": {
+    "indices": {
+      "shanghai": {"close": 3125.43, "change_pct": 0.82},
+      "shenzhen": {"close": 10200.12, "change_pct": 1.05},
+      "chuangye": {"close": 2050.66, "change_pct": 1.21}
+    },
+    "market_sentiment": {
+      "up_count": 2800,
+      "down_count": 1200,
+      "volume_ratio_vs_5d": 1.15
+    }
+  }
+}
