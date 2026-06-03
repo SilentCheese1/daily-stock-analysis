@@ -4,3 +4,5 @@
 # pandas
 # gradio
 # python-dotenv
+akshare
+pandas
