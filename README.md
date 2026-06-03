@@ -1,6 +1,6 @@
 # OpenClaw 三人协作大作业起步包
 
-本包适合小白小组先跑通“3 个机器人分别分析 + 1 个汇总机器人生成报告”的主流程。
+3 个机器人分别分析 + 1 个汇总机器人生成报告
 
 ## 运行顺序
 
@@ -23,7 +23,4 @@ python agents/summary_agent.py
 
 ## 重要提醒
 
-- 代码中的行情数据是演示数据，目的是先跑通流程。
-- 最终提交前，建议把 `build_report()` 里的演示数据替换为真实数据源，例如 AkShare、Tushare、东方财富等。
-- 不要把 DeepSeek API Key、飞书 App Secret 写进代码或上传到平台。
-- HTML 展示可以使用本包中的 `OpenClaw_三人协作大作业_HTML行动指南.html`，也可以把最终报告 HTML 作为展示素材。
+数据源统一使用 akshare
