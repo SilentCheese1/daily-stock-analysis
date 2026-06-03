@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenClaw 三人协作大作业：行动指南 + HTML展示模板</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#172033;--muted:#667085;--blue:#2563eb;--green:#059669;--orange:#f59e0b;--red:#dc2626;--line:#e5e7eb;--code:#111827;}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.72}.layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}.side{position:sticky;top:0;height:100vh;overflow:auto;background:#0f172a;color:white;padding:22px 18px}.side h1{font-size:20px;margin:0 0 12px}.side p{font-size:13px;color:#cbd5e1;margin:0 0 20px}.side a{display:block;color:#e2e8f0;text-decoration:none;padding:9px 10px;border-radius:9px;font-size:14px}.side a:hover{background:#1e293b}.main{padding:34px;max-width:1100px}.hero{background:linear-gradient(135deg,#1d4ed8,#0f172a);color:white;border-radius:22px;padding:34px;margin-bottom:22px;box-shadow:0 18px 40px rgba(15,23,42,.18)}.hero h1{font-size:34px;margin:0 0 10px}.hero p{margin:0;color:#dbeafe}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 10px 24px rgba(15,23,42,.05)}h2{font-size:26px;margin:26px 0 10px;border-left:6px solid var(--blue);padding-left:12px}h3{font-size:20px;margin:20px 0 8px}.tag{display:inline-block;border-radius:999px;padding:4px 10px;font-size:12px;background:#dbeafe;color:#1d4ed8;margin-right:6px}.ok{color:var(--green);font-weight:700}.warn{color:var(--orange);font-weight:700}.danger{color:var(--red);font-weight:700}table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}th{background:#f1f5f9}.check li{margin:8px 0}.code{position:relative;background:#0b1020;color:#e5e7eb;border-radius:14px;padding:16px;overflow:auto;margin:12px 0}.code code{white-space:pre;display:block;font-family:Consolas,Monaco,"Courier New",monospace;font-size:13px}.btn{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}.btn.secondary{background:#334155}.copy{position:absolute;right:10px;top:10px;background:#334155;color:#fff;border:0;border-radius:8px;padding:5px 8px;cursor:pointer}.timeline{counter-reset:day}.day{border-left:4px solid #c7d2fe;padding-left:16px;margin:15px 0}.day h3:before{counter-increment:day;content:"Day " counter(day) " · ";color:var(--blue)}.printbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}@media(max-width:900px){.layout{display:block}.side{position:relative;height:auto}.main{padding:18px}.grid{grid-template-columns:1fr}.hero h1{font-size:26px}}@media print{.side,.printbar,.copy{display:none}.layout{display:block}.main{padding:0}.card{break-inside:avoid;box-shadow:none}.hero{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <h1>OpenClaw 作业导航</h1>
+    <p>给三人小白小组使用：照着做、照着演示、照着写报告。</p>
+    <a href="#goal">1. 作业目标</a>
+    <a href="#roles">2. 三人分工</a>
+    <a href="#flow">3. 总体流程</a>
+    <a href="#install">4. 本机安装</a>
+    <a href="#feishu">5. 飞书机器人</a>
+    <a href="#workflow">6. OpenClaw 工作流</a>
+    <a href="#code">7. 起步代码</a>
+    <a href="#htmlshow">8. HTML 展示方案</a>
+    <a href="#server">9. 云服务器部署</a>
+    <a href="#report">10. 报告与提交</a>
+    <a href="#timeline">11. 7 天排期</a>
+    <a href="#qa">12. 常见问题</a>
+  </aside>
+  <main class="main">
+    <section class="hero">
+      <h1>OpenClaw 三人协作大作业行动指南</h1>
+      <p>选题建议：每日股票分析数字员工系统。目标：三人各部署一个 Claw/数字员工，飞书群触发，大盘、板块、个股分别输出 JSON，组长汇总为日报，并用 HTML 完成最终展示。</p>
+      <div class="printbar">
+        <button class="btn" onclick="window.print()">打印 / 另存为 PDF</button>
+        <button class="btn secondary" onclick="location.hash='htmlshow'">跳到 HTML 展示部分</button>
+      </div>
+    </section>
+
+    <section id="goal" class="card">
+      <h2>1. 作业目标：先跑通，再美化</h2>
+      <p>你们不要一开始就追求复杂模型。最稳路线是：<span class="ok">飞书群触发 → 三个 Python 脚本输出 JSON → 汇总机器人生成 HTML 日报 → 云服务器运行 → HTML 页面展示</span>。</p>
+      <div class="grid">
+        <div class="card"><span class="tag">必须</span><h3>三人三员工</h3><p>每人对应一个数字员工，分别负责大盘、板块、个股。</p></div>
+        <div class="card"><span class="tag">必须</span><h3>云服务器部署</h3><p>最终至少把汇总系统、HTML 页面或机器人服务部署到云服务器。</p></div>
+        <div class="card"><span class="tag">展示</span><h3>不用 PPT，用 HTML</h3><p>把这个 HTML 或你们自己改好的展示页作为答辩页面，配合飞书群实机演示。</p></div>
+      </div>
+    </section>
+
+    <section id="roles" class="card">
+      <h2>2. 三人分工</h2>
+      <table>
+        <thead><tr><th>成员</th><th>机器人名称</th><th>负责内容</th><th>飞书触发词</th><th>脚本</th><th>验收截图</th></tr></thead>
+        <tbody>
+          <tr><td>A 同学</td><td>大盘分析员工</td><td>上证、深证、创业板、成交量、涨跌家数、市场情绪</td><td>运行大盘</td><td>agents/market_agent.py</td><td>终端运行截图 + 飞书回复 JSON 截图</td></tr>
+          <tr><td>B 同学</td><td>板块分析员工</td><td>AI、半导体、新能源、医药、消费等热点板块</td><td>运行板块</td><td>agents/sector_agent.py</td><td>终端运行截图 + 飞书回复 JSON 截图</td></tr>
+          <tr><td>C 同学</td><td>个股分析员工</td><td>关注 2-3 只股票，完成趋势、均线、MACD、RSI 等分析</td><td>运行个股</td><td>agents/stock_agent.py</td><td>终端运行截图 + 飞书回复 JSON 截图</td></tr>
+          <tr><td>组长</td><td>汇总分析员工</td><td>监听或读取三份 JSON，生成综合日报与操作建议</td><td>运行汇总</td><td>agents/summary_agent.py</td><td>最终日报 HTML 截图 + 云服务器截图</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="flow" class="card">
+      <h2>3. 总体流程</h2>
+      <ol class="check">
+        <li>三个人分别创建自己的飞书机器人，各自获得 App ID 和 App Secret。</li>
+        <li>每个人在自己电脑或服务器上运行 <code>openclaw onboard</code>，渠道选择 Feishu，模型选择 DeepSeek。</li>
+        <li>三个机器人加入同一个飞书群。</li>
+        <li>群里分别发送：<code>@大盘机器人 运行大盘</code>、<code>@板块机器人 运行板块</code>、<code>@个股机器人 运行个股</code>。</li>
+        <li>三个机器人输出 JSON，并保存到 <code>data/reports/</code>。</li>
+        <li>组长发送 <code>@汇总机器人 运行汇总</code>，生成最终 HTML 日报。</li>
+        <li>答辩时打开 HTML 展示页，展示架构、运行结果、飞书群消息、最终日报和云服务器。</li>
+      </ol>
+    </section>
+
+    <section id="install" class="card">
+      <h2>4. 每个人本机安装步骤</h2>
+      <h3>4.1 安装基础软件</h3>
+      <ul class="check">
+        <li>Python 3.10 或 3.11</li><li>Git</li><li>VS Code</li><li>浏览器：Chrome / Edge</li>
+      </ul>
+      <h3>4.2 创建项目文件夹</h3>
+      <div class="code"><button class="copy" onclick="copyCode(this)">复制</button><code>mkdir openclaw-homework
+cd openclaw-homework</code></div>
+      <h3>4.3 安装 OpenClaw</h3>
+      <p class="warn">安装命令以班级群公告为准。下面只是常见写法。</p>
+      <div class="code"><button class="copy" onclick="copyCode(this)">复制</button><code>pip install openclaw
+openclaw --help</code></div>
+      <h3>4.4 初始化 OpenClaw</h3>
+      <div class="code"><button class="copy" onclick="copyCode(this)">复制</button><code>openclaw onboard</code></div>
+      <table><tbody>
+        <tr><th>渠道</th><td>Feishu</td></tr>
+        <tr><th>模型</th><td>DeepSeek</td></tr>
+        <tr><th>API Key</th><td>组长提供，所有人可共用；不要发到公开仓库</td></tr>
+        <tr><th>飞书 App ID/Secret</th><td>每个人填自己的机器人凭证</td></tr>
+      </tbody></table>
+    </section>
+
+    <section id="feishu" class="card">
+      <h2>5. 飞书机器人创建步骤</h2>
+      <ol class="check">
+        <li>进入飞书开放平台，创建“企业自建应用”。</li>
+        <li>应用名称分别命名为：大盘分析机器人、板块分析机器人、个股分析机器人。</li>
+        <li>在应用凭证页复制 App ID 与 App Secret。</li>
+        <li>开启机器人能力，并配置接收群聊消息事件。</li>
+        <li>检查权限：读取群消息、发送群消息、机器人进群。</li>
+        <li>发布或启用应用，把机器人拉入你们三人的飞书群。</li>
+        <li>在群里测试：@机器人 你好。若机器人有回应，说明通道基本成功。</li>
+      </ol>
+      <p class="danger">注意：App Secret 和 DeepSeek API Key 不能截图发到报告里，也不能上传到 GitHub。</p>
+    </section>
+
+    <section id="workflow" class="card">
+      <h2>6. OpenClaw 工作流配置</h2>
+      <p>每个人只配置自己负责的触发词和脚本。OpenClaw 具体界面可能和群公告版本略有差异，但规则思想一致。</p>
+      <table>
+        <thead><tr><th>成员</th><th>触发条件</th><th>执行动作</th><th>返回内容</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>群聊消息包含“运行大盘”</td><td><code>python agents/market_agent.py</code></td><td>脚本 stdout 的 JSON</td></tr>
+          <tr><td>B</td><td>群聊消息包含“运行板块”</td><td><code>python agents/sector_agent.py</code></td><td>脚本 stdout 的 JSON</td></tr>
+          <tr><td>C</td><td>群聊消息包含“运行个股”</td><td><code>python agents/stock_agent.py</code></td><td>脚本 stdout 的 JSON</td></tr>
+          <tr><td>组长</td><td>群聊消息包含“运行汇总”</td><td><code>python agents/summary_agent.py</code></td><td>最终日报文本或 HTML 链接</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="code" class="card">
+      <h2>7. 起步代码与目录</h2>
+      <p>建议使用这个目录结构。起步包里已经放好了 4 个脚本，先保证能跑通；最终再把演示数据替换成真实数据。</p>
+      <div class="code"><button class="copy" onclick="copyCode(this)">复制</button><code>openclaw-homework/
+├── agents/
+│   ├── common.py
+│   ├── market_agent.py
+│   ├── sector_agent.py
+│   ├── stock_agent.py
+│   └── summary_agent.py
+├── data/
+│   └── reports/
+├── ui/
+├── requirements.txt
+├── .env.example
+└── README.md</code></div>
+      <h3>本地测试顺序</h3>
+      <div class="code"><button class="copy" onclick="copyCode(this)">复制</button><code>python agents/market_agent.py
+python agents/sector_agent.py
+python agents/stock_agent.py
+python agents/summary_agent.py</code></div>
+      <p>看到 JSON 和最终日报，就说明最小闭环已经跑通。</p>
+    </section>
+
+    <section id="htmlshow" class="card">
+      <h2>8. HTML 展示方案：替代 PPT</h2>
+      <p>最终答辩时你们不做 PPT，直接打开 HTML 页面展示。建议展示 6 个页面/区块：</p>
+      <table>
+        <thead><tr><th>展示顺序</th><th>页面标题</th><th>讲什么</th><th>需要截图/演示</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>项目背景</td><td>OpenClaw 多智能体每日分析系统，三人三员工</td><td>本 HTML 首页</td></tr>
+          <tr><td>2</td><td>系统架构</td><td>飞书群、三个机器人、汇总机器人、云服务器、HTML 日报</td><td>架构图或流程图</td></tr>
+          <tr><td>3</td><td>成员分工</td><td>谁负责大盘/板块/个股/汇总</td><td>分工表</td></tr>
+          <tr><td>4</td><td>运行演示</td><td>飞书群 @ 三个机器人，展示 JSON 回复</td><td>现场演示或录屏</td></tr>
+          <tr><td>5</td><td>日报结果</td><td>综合分析、风险提示、操作建议</td><td>最终 HTML 日报</td></tr>
+          <tr><td>6</td><td>总结反思</td><td>遇到的问题、解决方式、创新点</td><td>云服务器/代码截图</td></tr>
+        </tbody>
+      </table>
+      <h3>7 分钟展示话术</h3>
+      <ol class="check">
+        <li>第 1 分钟：介绍题目和三人分工。</li>
+        <li>第 2 分钟：讲系统架构：飞书群触发，多 Agent 分析，汇总 Agent 生成日报。</li>
+        <li>第 3-4 分钟：现场运行飞书指令，展示三份 JSON。</li>
+        <li>第 5 分钟：展示最终 HTML 日报和 UI 页面。</li>
+        <li>第 6 分钟：展示云服务器部署截图和目录代码。</li>
+        <li>第 7 分钟：总结创新点、遇到的问题、如何避免 AI 编造数据。</li>
+      </ol>
+    </section>
+
+    <section id="server" class="card">
+      <h2>9. 云服务器部署</h2>
+      <p>小白建议只买一台轻量云服务器，由组长部署完整项目；三个人本机也要能运行自己的 Claw，满足“每人部署一个”的要求。</p>
+      <h3>服务器推荐</h3>
+      <ul class="check"><li>Ubuntu 22.04</li><li>2 核 2G 或 2 核 4G</li><li>带公网 IP</li><li>安全组开放 22、80、必要时开放 7860</li></ul>
+      <h3>部署命令</h3>
+      <div class="code"><button class="copy" onclick="copyCode(this)">复制</button><code>ssh root@你的服务器IP
+apt update
+apt install python3 python3-pip git screen -y
+git clone 你的仓库地址
+cd openclaw-homework
+pip install -r requirements.txt
+screen -S openclaw
+openclaw run</code></div>
+      <p>按 <code>Ctrl + A</code>，再按 <code>D</code>，可以让程序留在后台运行。</p>
+      <h3>HTML 页面发布最简方案</h3>
+      <div class="code"><button class="copy" onclick="copyCode(this)">复制</button><code># 在服务器项目目录启动静态网页
+cd data/reports
+python3 -m http.server 8000
+# 浏览器访问：http://服务器IP:8000/日期_final_report.html</code></div>
+    </section>
+
+    <section id="report" class="card">
+      <h2>10. 报告与提交材料</h2>
+      <ul class="check">
+        <li><span class="ok">实验报告 PDF：</span>包含整体思路、三人分工、数据来源、代码截图、飞书运行截图、HTML 展示截图、云服务器截图。</li>
+        <li><span class="ok">HTML 展示文件：</span>替代 PPT，用浏览器打开即可展示。</li>
+        <li><span class="ok">代码压缩包：</span>包含 Python 脚本、README、requirements.txt、HTML 展示页，不包含 API Key。</li>
+      </ul>
+      <h3>报告里必须写清楚的点</h3>
+      <ul class="check">
+        <li>为什么采用“大盘—板块—个股—汇总”的多智能体结构。</li>
+        <li>如何避免 AI 编造数据：先由脚本获取真实数据，再把数据交给模型总结；报告中保留数据来源字段。</li>
+        <li>多方案对比：规则分析、单智能体分析、多智能体协同分析。</li>
+        <li>遇到的问题：飞书权限、API Key 安全、服务器部署、JSON 格式不稳定等。</li>
+      </ul>
+    </section>
+
+    <section id="timeline" class="card">
+      <h2>11. 7 天最稳完成排期</h2>
+      <div class="timeline">
+        <div class="day"><h3>安装与建群</h3><p>三个人安装 Python、Git、OpenClaw；每个人创建飞书机器人并拉入同一个群。</p></div>
+        <div class="day"><h3>脚本跑通</h3><p>三个人分别运行自己的 Python 脚本，确保能输出 JSON，并截图。</p></div>
+        <div class="day"><h3>飞书触发</h3><p>配置 OpenClaw 工作流，让飞书群消息触发脚本并回复 JSON。</p></div>
+        <div class="day"><h3>汇总机器人</h3><p>组长完成 summary_agent.py，能读取三份 JSON 并生成最终 HTML 日报。</p></div>
+        <div class="day"><h3>HTML 展示页</h3><p>把项目介绍、架构图、运行结果、日报展示整合到 HTML 页面。</p></div>
+        <div class="day"><h3>云服务器部署</h3><p>把项目部署到云服务器，截图记录安装、运行、访问页面过程。</p></div>
+        <div class="day"><h3>报告与演练</h3><p>写报告、整理截图、压缩代码、全员模拟答辩一次。</p></div>
+      </div>
+    </section>
+
+    <section id="qa" class="card">
+      <h2>12. 常见问题与解决方法</h2>
+      <table>
+        <thead><tr><th>问题</th><th>解决方法</th></tr></thead>
+        <tbody>
+          <tr><td>OpenClaw 安装失败</td><td>先确认 Python 版本，换清华 pip 源，或按群公告安装命令重装。</td></tr>
+          <tr><td>飞书机器人没有回复</td><td>检查机器人是否进群、事件订阅是否开启、回调地址是否正确、权限是否发布。</td></tr>
+          <tr><td>脚本运行路径找不到</td><td>使用英文路径，避免中文目录；在项目根目录运行命令。</td></tr>
+          <tr><td>JSON 格式混乱</td><td>脚本最后只 print 一个 JSON；模型总结另存字段，不要混在 stdout 里。</td></tr>
+          <tr><td>API Key 泄露风险</td><td>使用 .env 保存，报告截图打码，Git 忽略 .env 文件。</td></tr>
+          <tr><td>现场网络不稳定</td><td>准备 30 秒以上录屏，同时保留本地 HTML 日报作为备用展示。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>最后检查清单</h2>
+      <ul class="check">
+        <li>□ 三个人都能运行自己的 Claw。</li>
+        <li>□ 三个飞书机器人都在同一个群。</li>
+        <li>□ 三个触发词都能返回 JSON。</li>
+        <li>□ 汇总机器人能生成最终日报。</li>
+        <li>□ 有 HTML 展示页，不依赖 PPT。</li>
+        <li>□ 有云服务器部署截图。</li>
+        <li>□ 报告 PDF、HTML 展示文件、代码压缩包都准备好。</li>
+      </ul>
+    </section>
+  </main>
+</div>
+<script>
+function copyCode(btn){
+  const text = btn.parentElement.querySelector('code').innerText;
+  navigator.clipboard.writeText(text).then(()=>{btn.innerText='已复制';setTimeout(()=>btn.innerText='复制',1200);});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# 最小版不依赖第三方库，先保证能跑通。
+# 进阶版可以取消下面注释，用于真实数据和 UI：
+# akshare
+# pandas
+# gradio
+# python-dotenv
