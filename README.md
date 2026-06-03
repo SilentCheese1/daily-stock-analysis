@@ -1,0 +1,29 @@
+# OpenClaw 三人协作大作业起步包
+
+本包适合小白小组先跑通“3 个机器人分别分析 + 1 个汇总机器人生成报告”的主流程。
+
+## 运行顺序
+
+```bash
+cd openclaw_pkg
+python agents/market_agent.py
+python agents/sector_agent.py
+python agents/stock_agent.py
+python agents/summary_agent.py
+```
+
+运行后，JSON 会保存在 `data/reports/`，最终 HTML 日报会保存在 `data/reports/日期_final_report.html`。
+
+## 三人分工
+
+- A 同学：大盘分析 Agent，对应 `agents/market_agent.py`，飞书触发词：运行大盘
+- B 同学：板块分析 Agent，对应 `agents/sector_agent.py`，飞书触发词：运行板块
+- C 同学：个股分析 Agent，对应 `agents/stock_agent.py`，飞书触发词：运行个股
+- 组长：汇总 Agent，对应 `agents/summary_agent.py`，飞书触发词：运行汇总
+
+## 重要提醒
+
+- 代码中的行情数据是演示数据，目的是先跑通流程。
+- 最终提交前，建议把 `build_report()` 里的演示数据替换为真实数据源，例如 AkShare、Tushare、东方财富等。
+- 不要把 DeepSeek API Key、飞书 App Secret 写进代码或上传到平台。
+- HTML 展示可以使用本包中的 `OpenClaw_三人协作大作业_HTML行动指南.html`，也可以把最终报告 HTML 作为展示素材。
