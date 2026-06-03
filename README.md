@@ -12,7 +12,7 @@ python agents/stock_agent.py
 python agents/summary_agent.py
 ```
 
-运行后，三个分析 Agent 会分别生成大盘、板块和个股分析 JSON 文件，并统一保存到 `data/reports/` 目录下。组长运行 `summary_agent.py` 后，系统会读取三份 JSON，生成综合分析结果，并将最终 HTML 日报保存为 `data/reports/日期_final_report.html`。展示时可在浏览器中打开该 HTML 文件查看完整日报。
+运行后，三个分析 Agent 会将 JSON 结果保存到 `data/reports/`。组长运行 `summary_agent.py` 后，系统会生成带日期的历史日报 `data/reports/日期_final_report.html`，同时更新 `ui/final_report.html` 作为最终展示页面。
 
 
 ## 三人分工
