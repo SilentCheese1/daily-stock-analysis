@@ -18,23 +18,23 @@ def safe_float(value):
 def get_index_analysis():
     """
     获取上证指数、深证成指、创业板指的实时行情。
-    数据源：AkShare 东方财富指数行情接口。
+    数据源：AkShare 新浪财经指数实时行情接口。
     """
     target_indexes = {
-        "上证指数": "000001",
-        "深证成指": "399001",
-        "创业板指": "399006",
+        "上证指数": "sh000001",
+        "深证成指": "sz399001",
+        "创业板指": "sz399006",
     }
 
     try:
-        df = ak.stock_zh_index_spot_em()
+        df = ak.stock_zh_index_spot_sina()
     except Exception as e:
         return {
             name: {
                 "code": code,
                 "latest": None,
                 "change_pct": None,
-                "status": f"指数数据获取失败：{e}"
+                "status": f"新浪指数数据获取失败：{e}"
             }
             for name, code in target_indexes.items()
         }
@@ -71,9 +71,10 @@ def get_index_analysis():
 def get_market_breadth():
     """
     获取全 A 股上涨家数、下跌家数，用于判断市场情绪。
+    数据源：AkShare 新浪财经 A 股实时行情接口。
     """
     try:
-        df = ak.stock_zh_a_spot_em()
+        df = ak.stock_zh_a_spot()
     except Exception as e:
         return {
             "up_count": None,
@@ -81,7 +82,7 @@ def get_market_breadth():
             "flat_count": None,
             "avg_change_pct": None,
             "market_sentiment": "未知",
-            "status": f"A股行情获取失败：{e}"
+            "status": f"新浪A股行情获取失败：{e}"
         }
 
     if "涨跌幅" not in df.columns:
@@ -175,7 +176,7 @@ def build_report():
         "agent": "market",
         "date": today_str(),
         "module": "大盘分析",
-        "data_source": "AkShare",
+        "data_source": "AkShare-Sina",
         "index_analysis": index_analysis,
         "market_breadth": market_breadth,
         "summary": summary,
