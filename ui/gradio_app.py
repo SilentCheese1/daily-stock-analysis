@@ -984,68 +984,267 @@ def qa_answer(question):
 
 
 custom_css = """
+/* ===== Global Dark Theme ===== */
+:root {
+  --bg-primary: #0b0d17;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card-hover: rgba(255,255,255,0.08);
+  --border-color: rgba(255,255,255,0.08);
+  --border-accent: rgba(99,102,241,0.3);
+  --text-primary: #e0e4f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #818cf8;
+  --accent-glow: #6366f1;
+}
+
+.gradio-container {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  max-width: 1200px !important;
+}
+body {
+  background: var(--bg-primary) !important;
+}
+
+/* Headers */
+h1, h2, h3, h4, h5, h6, label, .prose {
+  color: var(--text-primary) !important;
+}
+
+/* Markdown / prose */
+.prose p, .prose li, .prose span {
+  color: var(--text-secondary) !important;
+}
+
+/* Tabs */
+.tabs {
+  background: transparent !important;
+  border: none !important;
+}
+.tab-nav {
+  background: rgba(255,255,255,0.03) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  padding: 4px !important;
+  margin-bottom: 16px !important;
+}
+.tab-nav button {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+}
+.tab-nav button:hover {
+  background: rgba(99,102,241,0.1) !important;
+  color: var(--text-primary) !important;
+}
+.tab-nav button.selected {
+  background: rgba(99,102,241,0.2) !important;
+  color: var(--accent) !important;
+  box-shadow: 0 0 12px rgba(99,102,241,0.15) !important;
+}
+
+/* Buttons */
+button.gradio-button, .gr-button {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--border-color) !important;
+  transition: all 0.2s !important;
+}
+button.gradio-button.primary, .gr-button.primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.2) !important;
+}
+button.gradio-button.primary:hover {
+  box-shadow: 0 6px 24px rgba(99,102,241,0.35) !important;
+  transform: translateY(-1px);
+}
+
+/* Textbox / Input */
+.gr-box, .gr-input, textarea, input[type="text"] {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 12px !important;
+  color: var(--text-primary) !important;
+}
+.gr-box:focus, textarea:focus, input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.15) !important;
+}
+
+/* Dataframe / Tables */
+table, .gr-table, .dataframe {
+  background: transparent !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+table thead tr, .gr-table thead tr {
+  background: rgba(99,102,241,0.1) !important;
+}
+table th, .gr-table th {
+  color: var(--accent) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 12px 16px !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  text-align: center !important;
+}
+table td, .gr-table td {
+  color: var(--text-primary) !important;
+  padding: 10px 16px !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  text-align: center !important;
+  font-size: 13px !important;
+}
+table tr:hover td, .gr-table tr:hover td {
+  background: rgba(99,102,241,0.05) !important;
+}
+
+/* Plot backgrounds */
+.js-plotly-plot, .plot-container {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+/* ===== Hero Section ===== */
 .hero {
-  padding: 24px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #0f172a, #1e40af);
-  color: white;
+  padding: 28px 32px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.06));
+  border: 1px solid var(--border-accent);
+  color: var(--text-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
 }
 .hero-title {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 800;
-  margin-bottom: 8px;
+  background: linear-gradient(135deg, #f0f4ff, #a5b4fc, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
 }
 .hero-subtitle {
-  font-size: 15px;
-  opacity: 0.9;
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 .hero-date {
   text-align: right;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.8;
-  opacity: 0.95;
+  color: var(--text-muted);
 }
+
+/* ===== Card Grid ===== */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(160px, 1fr));
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 .metric-card {
   border-radius: 16px;
-  padding: 18px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  padding: 20px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s;
+}
+.metric-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.08);
 }
 .metric-label {
-  color: #64748b;
-  font-size: 14px;
-  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 .metric-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 .metric-desc {
-  font-size: 13px;
-  color: #64748b;
+  font-size: 12px;
+  color: var(--text-muted);
   line-height: 1.5;
 }
+
+/* ===== Section Card ===== */
 .section-card {
   border-radius: 16px;
-  padding: 18px;
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   margin-top: 10px;
 }
+.section-card h3 {
+  color: var(--text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+}
+.section-card p {
+  color: var(--text-secondary) !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+/* ===== Status box ===== */
+.gr-box:has(textarea[readonly]) {
+  border-color: var(--border-color) !important;
+}
+
+/* ===== Tab inner content ===== */
+.tabitem {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.4); }
+
+/* ===== Accent label override for Gradio markdown headers ===== */
+.prose strong {
+  color: var(--accent) !important;
+}
+.prose code {
+  background: rgba(99,102,241,0.12) !important;
+  color: var(--accent) !important;
+  border-radius: 6px !important;
+  padding: 2px 8px !important;
+  font-size: 13px !important;
+}
 """
+
+with gr.Blocks(title="每日股票分析数字员工系统", css=custom_css, theme=gr.themes.Default()) as demo:
+    gr.HTML("""<div style="margin-bottom:6px">
+  <h1 style="font-size:26px;font-weight:800;margin:0;background:linear-gradient(135deg,#f0f4ff,#a5b4fc,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">📊 每日股票分析数字员工系统</h1>
+  <p style="color:#94a3b8;font-size:14px;margin:6px 0 0 0;">OpenClaw 多智能体协同分析 · 自动上传结果 · Web 可视化看板</p>
+</div>")
 
 
 with gr.Blocks(title="每日股票分析数字员工系统", css=custom_css) as demo:
