@@ -6,188 +6,192 @@ import akshare as ak
 import pandas as pd
 
 
-def normalize_number(value):
-    """把 AkShare 返回的数值安全转成字符串。"""
-    if pd.isna(value):
-        return "未知"
-    return str(value)
+ROOT = Path(__file__).resolve().parents[1]
+REPORT_DIR = ROOT / "data" / "reports"
+REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def try_eastmoney_industry():
+def today_str():
+    return datetime.now().strftime("%Y-%m-%d")
+
+
+def safe_value(value, default="数据暂缺"):
+    if value is None:
+        return default
+    try:
+        if pd.isna(value):
+            return default
+    except Exception:
+        pass
+
+    text = str(value).strip()
+    if text == "" or text.lower() in ["nan", "none", "null"]:
+        return default
+    return text
+
+
+def to_float(value):
+    try:
+        if value is None:
+            return None
+        text = str(value).replace("%", "").replace(",", "").strip()
+        if text == "" or text.lower() in ["nan", "none", "null"]:
+            return None
+        return float(text)
+    except Exception:
+        return None
+
+
+def fmt_pct(value):
+    num = to_float(value)
+    if num is None:
+        return safe_value(value, "数据暂缺")
+    return f"{num:.2f}"
+
+
+def fmt_amount_wan(value):
     """
-    尝试使用 AkShare 东方财富行业板块接口。
+    新浪板块接口里的“总成交额”单位是万元。
+    这里把它格式化成更适合展示的文字。
     """
-    df = ak.stock_board_industry_name_em()
+    num = to_float(value)
+    if num is None:
+        return "成交额数据暂缺"
+
+    if abs(num) >= 10000:
+        return f"{num / 10000:.2f}亿元"
+    return f"{num:.2f}万元"
+
+
+def get_sina_sector_data():
+    """
+    获取新浪行业板块实时行情。
+    AKShare 接口：stock_sector_spot(indicator="新浪行业")
+    常见字段：
+    label、板块、公司家数、平均价格、涨跌额、涨跌幅、总成交量、总成交额、
+    股票代码、个股-涨跌幅、个股-当前价、个股-涨跌额、股票名称
+    """
+    df = ak.stock_sector_spot(indicator="新浪行业")
 
     if df is None or df.empty:
-        raise ValueError("东方财富行业板块接口返回空数据")
+        raise RuntimeError("AkShare 新浪行业板块接口返回为空")
 
-    raw_columns = list(df.columns)
+    print("新浪行业板块字段：", list(df.columns))
+    return df
 
-    if "涨跌幅" in df.columns:
-        df = df.sort_values(by="涨跌幅", ascending=False)
+
+def build_sector_report():
+    date = today_str()
+
+    df = get_sina_sector_data().copy()
+
+    if "涨跌幅" not in df.columns:
+        raise RuntimeError(f"新浪行业板块数据缺少“涨跌幅”字段，当前字段：{list(df.columns)}")
+
+    df["涨跌幅_数值"] = pd.to_numeric(df["涨跌幅"], errors="coerce")
+    df = df.sort_values("涨跌幅_数值", ascending=False)
 
     top_df = df.head(5)
 
     hot_sectors = []
-    for _, row in top_df.iterrows():
-        hot_sectors.append({
-            "sector_name": normalize_number(row.get("板块名称", row.get("名称", "未知板块"))),
-            "change_pct": normalize_number(row.get("涨跌幅", "未知")),
-            "leading_stock": normalize_number(row.get("领涨股票", "未知")),
-            "leading_stock_change_pct": normalize_number(row.get("领涨股票-涨跌幅", "未知")),
-            "turnover_rate": normalize_number(row.get("换手率", "未知")),
-            "source": "eastmoney"
-        })
 
-    return {
-        "status": "success",
-        "data_source": "AkShare-Eastmoney",
-        "hot_sectors": hot_sectors,
-        "raw_columns": raw_columns
-    }
+    for rank, (_, row) in enumerate(top_df.iterrows(), start=1):
+        sector_name = safe_value(
+            row.get("板块") or row.get("名称") or row.get("name"),
+            f"板块{rank}"
+        )
 
+        change_pct = fmt_pct(row.get("涨跌幅"))
+        avg_price = safe_value(row.get("平均价格"), "数据暂缺")
+        price_change = safe_value(row.get("涨跌额"), "数据暂缺")
+        total_volume = safe_value(row.get("总成交量"), "数据暂缺")
+        total_amount = row.get("总成交额")
 
-def try_ths_industry():
-    """
-    尝试使用 AkShare 同花顺行业板块接口。
-    不同 AkShare 版本字段可能不同，所以这里做宽松处理。
-    """
-    if not hasattr(ak, "stock_board_industry_name_ths"):
-        raise AttributeError("当前 AkShare 版本没有 stock_board_industry_name_ths 接口")
+        leading_stock = safe_value(row.get("股票名称"), "数据暂缺")
+        leading_stock_code = safe_value(row.get("股票代码"), "数据暂缺")
+        leading_stock_change_pct = fmt_pct(row.get("个股-涨跌幅"))
+        leading_stock_price = safe_value(row.get("个股-当前价"), "数据暂缺")
 
-    df = ak.stock_board_industry_name_ths()
+        amount_text = fmt_amount_wan(total_amount)
 
-    if df is None or df.empty:
-        raise ValueError("同花顺行业板块接口返回空数据")
+        # 新浪接口没有真实“主力净流入”，这里用真实成交额表达资金活跃度，避免编造主力资金。
+        fund_flow = f"总成交额 {amount_text}（新浪板块口径）"
 
-    raw_columns = list(df.columns)
-
-    # 尝试找到涨跌幅字段
-    possible_change_cols = ["涨跌幅", "涨幅", "change_pct", "涨跌幅(%)"]
-    change_col = None
-    for col in possible_change_cols:
-        if col in df.columns:
-            change_col = col
-            break
-
-    if change_col:
-        df = df.sort_values(by=change_col, ascending=False)
-
-    top_df = df.head(5)
-
-    hot_sectors = []
-    for _, row in top_df.iterrows():
-        # 尝试找到板块名称字段
-        sector_name = (
-            row.get("板块", None)
-            or row.get("板块名称", None)
-            or row.get("名称", None)
-            or row.get("name", None)
-            or "未知板块"
+        hot_reason = (
+            f"{sector_name}板块今日涨跌幅为 {change_pct}%，"
+            f"板块平均价格为 {avg_price}，涨跌额为 {price_change}。"
+            f"领涨股为 {leading_stock}，个股涨跌幅为 {leading_stock_change_pct}%，"
+            f"当前价为 {leading_stock_price}。"
+            f"板块总成交量为 {total_volume}，总成交额为 {amount_text}。"
         )
 
         hot_sectors.append({
-            "sector_name": normalize_number(sector_name),
-            "change_pct": normalize_number(row.get(change_col, "未知")) if change_col else "未知",
-            "leading_stock": normalize_number(row.get("领涨股", row.get("领涨股票", "未知"))),
-            "leading_stock_change_pct": normalize_number(row.get("领涨股涨幅", "未知")),
-            "turnover_rate": normalize_number(row.get("换手率", "未知")),
-            "source": "ths"
+            "rank": rank,
+
+            # 网站展示字段
+            "name": sector_name,
+            "change_pct": change_pct,
+            "fund_flow": fund_flow,
+            "hot_reason": hot_reason,
+
+            # 兼容字段
+            "sector_name": sector_name,
+            "leading_stock": leading_stock,
+            "leading_stock_code": leading_stock_code,
+            "leading_stock_change_pct": leading_stock_change_pct,
+            "leading_stock_price": leading_stock_price,
+            "avg_price": avg_price,
+            "price_change": price_change,
+            "total_volume": total_volume,
+            "total_amount": amount_text,
+            "source": "AkShare-Sina"
         })
 
-    return {
-        "status": "success",
-        "data_source": "AkShare-THS",
-        "hot_sectors": hot_sectors,
-        "raw_columns": raw_columns
-    }
+    sector_names = [item["name"] for item in hot_sectors]
 
+    analysis = (
+        "今日新浪行业板块涨幅靠前的方向包括："
+        + "、".join(sector_names)
+        + "。这些板块在涨跌幅和成交额维度上表现较活跃，可作为当日市场热点观察方向。"
+    )
 
-def get_sector_data():
-    """
-    多接口获取板块数据：
-    1. 优先 AkShare-Eastmoney
-    2. 失败后尝试 AkShare-THS
-    """
-    errors = []
+    risk = (
+        "板块涨幅靠前说明短线热度较高，但也可能存在追高风险。"
+        "由于新浪板块接口不直接提供主力净流入字段，本报告使用板块总成交额辅助判断资金活跃度，"
+        "建议结合大盘走势、成交量变化和领涨股持续性进一步判断。"
+    )
 
-    for fetcher in [try_eastmoney_industry, try_ths_industry]:
-        try:
-            result = fetcher()
-            if result["status"] == "success" and result["hot_sectors"]:
-                return result
-        except Exception as e:
-            errors.append(f"{fetcher.__name__}: {type(e).__name__}: {e}")
-
-    return {
-        "status": "failed",
-        "data_source": "AkShare",
-        "hot_sectors": [],
-        "raw_columns": [],
-        "error": "；".join(errors)
-    }
-
-
-def build_report():
-    today = datetime.now().strftime("%Y-%m-%d")
-    sector_data = get_sector_data()
-
-    if sector_data["status"] == "success" and sector_data["hot_sectors"]:
-        names = [item["sector_name"] for item in sector_data["hot_sectors"]]
-
-        analysis = (
-            "今日涨幅靠前的行业板块包括："
-            + "、".join(names)
-            + "。这些板块短线表现较活跃，可作为今日市场热点观察方向。"
-        )
-
-        risk = (
-            "板块热点轮动较快，若部分板块短期涨幅过大，可能存在追高回落风险。"
-            "需要结合成交量、资金持续性和大盘环境综合判断。"
-        )
-
-        suggestion = (
-            "优先关注涨幅靠前且有领涨个股带动的板块，避免盲目追高；"
-            "对高波动板块应控制仓位，等待回调或确认资金持续流入后再考虑。"
-        )
-    else:
-        analysis = "今日板块数据获取失败或为空，暂不生成确定性板块判断。"
-        risk = "数据源异常时不应直接依赖 AI 生成投资结论，避免出现编造数据。"
-        suggestion = "建议稍后重试 AkShare 接口，或与组长确认是否需要备用数据源。"
+    suggestion = (
+        "优先关注涨幅靠前、成交额较高、领涨股表现较强的行业板块；"
+        "对于短线涨幅过大但后续成交额不能持续放大的板块，应控制仓位并等待回调确认。"
+    )
 
     report = {
         "agent": "B",
         "module": "sector",
-        "data_source": sector_data.get("data_source", "AkShare"),
-        "date": today,
-        "status": sector_data["status"],
-        "hot_sectors": sector_data["hot_sectors"],
+        "data_source": "AkShare-Sina",
+        "date": date,
+        "status": "success",
+        "hot_sectors": hot_sectors,
         "analysis": analysis,
         "risk": risk,
         "suggestion": suggestion,
-        "raw_columns": sector_data.get("raw_columns", [])
+        "raw_columns": list(df.columns)
     }
-
-    if sector_data["status"] == "failed":
-        report["error"] = sector_data.get("error", "")
 
     return report
 
 
 def main():
-    report = build_report()
+    report = build_sector_report()
 
-    output_dir = Path("data/reports")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = REPORT_DIR / f"{report['date']}_sector.json"
 
-    output_path = output_dir / f"{report['date']}_sector.json"
-
-    with open(output_path, "w", encoding="utf-8") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
 
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    print(f"\n已生成文件：{output_path}")
+    print(f"\n已生成文件：{output_file}")
 
 
 if __name__ == "__main__":

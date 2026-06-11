@@ -8,7 +8,7 @@ import requests
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_DIR = ROOT / "data" / "reports"
 
-UPLOAD_URL = "http://127.0.0.1:7861/api/upload_report"
+UPLOAD_URL = "http://223.4.251.191:7861/api/upload_report"
 UPLOAD_TOKEN = "stock-demo-token"
 
 
