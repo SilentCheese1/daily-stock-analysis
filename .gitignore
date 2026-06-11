@@ -4,3 +4,6 @@ venv/
 __pycache__/
 *.pyc
 .DS_Store
+data/reports/
+logs/
+ui/gradio_app.py.save
