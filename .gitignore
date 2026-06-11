@@ -7,3 +7,11 @@ __pycache__/
 data/reports/
 logs/
 ui/gradio_app.py.save
+
+# local backup files
+agents/*backup*.py
+agents/*failed_backup*.py
+agents/normalize_sector_for_web.py
+
+# local secret files
+deepseek_key_local.txt
