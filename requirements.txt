@@ -6,3 +6,8 @@
 # python-dotenv
 akshare
 pandas
+gradio
+fastapi
+uvicorn
+requests
+plotly
